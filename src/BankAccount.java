@@ -2,7 +2,7 @@ import java.io.Serializable;
 import java.lang.reflect.Parameter;
 
 public class BankAccount implements Serializable {
-    private String accountNumber;
+    private int accountNumber;
     private String password;
     float balance;
 
@@ -12,10 +12,14 @@ public class BankAccount implements Serializable {
     }
 
     // Parameterized constructor
-    public BankAccount(String accountNumber, String password, float balance) {
+    public BankAccount(int accountNumber, String password, float balance) {
         this.accountNumber = accountNumber;
         this.password = password;
         this.balance = balance;
+    }
+
+    public int getAccountNumber() {
+        return accountNumber;
     }
 
     // Login validation
@@ -24,13 +28,15 @@ public class BankAccount implements Serializable {
     }
 
     // Method for increasing the balance
-    public void deposit(float amount) {
+    public Transaction deposit(float amount) {
         this.balance += amount;
+        return new Transaction("Deposit", amount, null, this.accountNumber);
     }
 
     // Method for decreasing the balance
-    public void withdraw(float amount) {
+    public Transaction withdraw(float amount) {
         this.balance -= amount;
+        return new Transaction("Withdraw", amount, this.accountNumber, null);
     }
 
     // Displaying balance to user
@@ -39,9 +45,10 @@ public class BankAccount implements Serializable {
     }
 
     // Transfer balance to another account
-    public void transfer(BankAccount account, float amount) {
+    public Transaction transfer(BankAccount account, float amount) {
         this.balance -= amount;
         account.deposit(amount);
+        return new Transaction("Deposit", amount, this.accountNumber, account.getAccountNumber());
     }
 
 }

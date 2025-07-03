@@ -1,7 +1,8 @@
 import java.util.*;
 
 public class Main {
-
+    public static final String accountFilename = "Accounts.txt";
+    public static final String transactionsFilename = "Transactions.txt";
     public static void main(String[] args) {
         // Setting up starting conditions
         Scanner scanner = new Scanner(System.in);
@@ -9,9 +10,9 @@ public class Main {
         int chosenAccount =  scanner.nextInt();
 
         // Loading saved accounts
-        Map<Integer, BankAccount> accounts = Storage.loadAccounts();
+        Map<Integer, BankAccount> accounts = Storage.load("Accounts.txt");
         // Tracking transactions
-        List<Transaction> transactions = Storage.loadTransactions();
+        List<Transaction> transactions = Storage.load("Transactions.txt");
 
         // Temporary test accounts if there are no saved ones
         if(accounts.isEmpty()) {
@@ -31,6 +32,8 @@ public class Main {
             System.out.println("6. Save accounts");
             System.out.println("7. Change to another account");
             System.out.println("8. Show all transactions");
+            System.out.println("9. Add new account");
+
 
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -72,14 +75,14 @@ public class Main {
                     break;
                 case 5:
                     System.out.println("Saving...");
-                    Storage.saveAccounts(accounts);
-                    Storage.saveTransactions(transactions);
+                    Storage.save(accounts, "Accounts.txt");
+                    Storage.save(transactions, "Transactions.txt");
                     System.out.println("Have a great day!");
                     scanner.close();
                     return;
                 case 6:
                     System.out.println("Saving...");
-                    Storage.saveAccounts(accounts);
+                    Storage.save(accounts, "Accounts.txt");
                     break;
                 case 7:
                     System.out.println("Number of the account to switch to:");
@@ -89,6 +92,7 @@ public class Main {
                     for (Transaction t : transactions) {
                         System.out.println(t);
                     }
+                    break;
                 default:
                     System.out.println("Invalid option. Please try again.");
             }

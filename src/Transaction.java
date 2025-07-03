@@ -8,6 +8,10 @@ public class Transaction implements Serializable {
     Integer toAccount;
     LocalDateTime timestamp;
 
+    public Transaction() {
+        System.out.println("Transaction created.");
+    }
+
     public Transaction(String type, float amount, Integer from, Integer to) {
         this.type = type;
         this.amount = amount;

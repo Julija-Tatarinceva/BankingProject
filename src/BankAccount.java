@@ -1,6 +1,9 @@
+import java.io.Serializable;
 import java.lang.reflect.Parameter;
 
-public class BankAccount {
+public class BankAccount implements Serializable {
+    private String accountNumber;
+    private String password;
     float balance;
 
     // Default constructor
@@ -9,8 +12,15 @@ public class BankAccount {
     }
 
     // Parameterized constructor
-    public BankAccount(float balance) {
+    public BankAccount(String accountNumber, String password, float balance) {
+        this.accountNumber = accountNumber;
+        this.password = password;
         this.balance = balance;
+    }
+
+    // Login validation
+    public boolean authenticate(String password) {
+        return this.password.equals(password);
     }
 
     // Method for increasing the balance
@@ -33,4 +43,5 @@ public class BankAccount {
         this.balance -= amount;
         account.deposit(amount);
     }
+
 }

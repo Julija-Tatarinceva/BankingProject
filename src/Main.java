@@ -1,3 +1,5 @@
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -5,22 +7,29 @@ public class Main {
     public static void main(String[] args) {
         // Setting up starting conditions
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Welcome to Bank App! Enter initial balance: ");
-        float initialBalance = scanner.nextFloat();
+        System.out.println("Welcome to Bank App! Enter initial account number: ");
+        int chosenAccount =  scanner.nextInt();
 
-        // Test accounts
-        BankAccount myAccount = new BankAccount(initialBalance);
-        BankAccount friendsAccount1 = new BankAccount(initialBalance);
-        BankAccount friendsAccount2 = new BankAccount(initialBalance);
+        // Loading saved accounts
+        Map<Integer, BankAccount> accounts = AccountStorage.loadAccounts();
+
+        // Temporary test accounts if there are no saved ones
+        if(accounts.isEmpty()) {
+            accounts.put(1, new BankAccount("1", "111", 200));
+            accounts.put(2, new BankAccount("2", "222", 200));
+            accounts.put(3, new BankAccount("3", "333", 200));
+        }
 
         // Interactable menu
         while (true) {
-            System.out.println("\nMenu:");
+            System.out.println("\nYou are on account " + chosenAccount + ". Menu:");
             System.out.println("1. Deposit to My Account");
             System.out.println("2. Withdraw from My Account");
             System.out.println("3. Show All Balances");
             System.out.println("4. Transfer to Friend's Account");
             System.out.println("5. Exit");
+            System.out.println("6. save accounts");
+            System.out.println("7. change to another account");
 
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -30,37 +39,30 @@ public class Main {
                 case 1:
                     System.out.print("Amount to deposit into My Account: ");
                     amount = scanner.nextFloat();
-                    myAccount.deposit(amount);
+                    accounts.get(chosenAccount).deposit(amount);
                     break;
                 case 2:
                     System.out.print("Amount to withdraw from My Account: ");
                     amount = scanner.nextFloat();
-                    myAccount.withdraw(amount);
+                    accounts.get(chosenAccount).withdraw(amount);
                     break;
-                case 3:
-                    System.out.println("My Account:");
-                    myAccount.printBalance();
+                case 3: // Should be done with a cycle, this is temporary
+                    System.out.println("My initial Account:");
+                    accounts.get(1).printBalance();
                     System.out.println("Friend's Account 1:");
-                    friendsAccount1.printBalance();
+                    accounts.get(2).printBalance();
                     System.out.println("Friend's Account 2:");
-                    friendsAccount2.printBalance();
+                    accounts.get(3).printBalance();
                     break;
                 case 4:
-                    System.out.println("Transfer to which friend's account?");
-                    System.out.println("1. Friend 1");
-                    System.out.println("2. Friend 2");
-                    int friendChoice = scanner.nextInt();
-
+                    System.out.println("Transfer to which account? Enter the number:");
+                    int accountTo = scanner.nextInt();
                     System.out.print("Amount to transfer: ");
                     amount = scanner.nextFloat();
 
-                    if (friendChoice == 1) {
-                        myAccount.transfer(friendsAccount1, amount);
-                        System.out.println("Transferred to Friend 1.");
-                    } else if (friendChoice == 2) {
-                        myAccount.transfer(friendsAccount2, amount);
-                        System.out.println("Transferred to Friend 2.");
-                    } else {
+                    accounts.get(chosenAccount).transfer(accounts.get(accountTo), amount);
+                    System.out.println("Transferred to account: " + accountTo);
+                    if(!accounts.containsKey(accountTo)){
                         System.out.println("Invalid friend selection.");
                     }
                     break;
@@ -68,6 +70,14 @@ public class Main {
                     System.out.println("Have a great day!");
                     scanner.close();
                     return;
+                case 6:
+                    System.out.println("Saving...");
+                    AccountStorage.saveAccounts(accounts);
+                    break;
+                case 7:
+                    System.out.println("Number of the account to switch to:");
+                    chosenAccount = scanner.nextInt();
+                    break;
                 default:
                     System.out.println("Invalid option. Please try again.");
             }

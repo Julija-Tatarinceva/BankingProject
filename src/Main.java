@@ -4,25 +4,54 @@ public class Main {
     public static final String accountFilename = "Accounts.txt";
     public static final String transactionsFilename = "Transactions.txt";
     public static void main(String[] args) {
-        // Setting up starting conditions
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcome to Bank App! Enter initial account number: ");
-        int chosenAccount =  scanner.nextInt();
-
+        int chosenAccountNumber = 0;
+        boolean authOK = false;
         // Loading saved accounts
         Map<Integer, BankAccount> accounts = Storage.load(accountFilename);
+        if(accounts == null)
+            accounts = new HashMap<>();
         // Tracking transactions
         List<Transaction> transactions = Storage.load(transactionsFilename);
+        if(transactions == null)
+            transactions = new ArrayList<>();
+        // Setting up starting conditions
+        Scanner scanner = new Scanner(System.in);
+
         // Temporary test accounts if there are no saved ones
-        if(accounts != null && accounts.isEmpty()) {
-            accounts.put(1, new BankAccount("111", 200));
-            accounts.put(2, new BankAccount("222", 200));
-            accounts.put(3, new BankAccount("333", 200));
+        if(accounts.isEmpty()) {
+            accounts = new HashMap<>();
+            BankAccount acc = new BankAccount("111", 200);
+            accounts.put(acc.getAccountNumber(), acc);
+            chosenAccountNumber = acc.getAccountNumber();
+            acc =  new BankAccount("222", 200);
+            accounts.put(acc.getAccountNumber(), acc);
+            acc =  new BankAccount("333", 200);
+            accounts.put(acc.getAccountNumber(), acc);
+            authOK = true;
+        }
+
+        while (!authOK) {
+            System.out.println("Welcome to Bank App! Enter initial account number: ");
+            int accountNumber =  scanner.nextInt();
+            if(accounts.containsKey(accountNumber)) {
+                System.out.print("Please enter the password for your new account: ");
+                String password = scanner.next();
+                if(accounts.get(accountNumber).authenticate(password)){
+                    System.out.print("Signing you in... ");
+                    chosenAccountNumber = accountNumber;
+                    authOK = true;
+                }
+                else {
+                    System.out.println("Invalid password. Please try again...");
+                }
+            } else{
+                System.out.println("Invalid account number. Please try again...");
+            }
         }
 
         // Interactable menu
         while (true) {
-            System.out.println("\nYou are on account " + chosenAccount + ". Menu:");
+            System.out.println("\nYou are on account " + chosenAccountNumber + ". Menu:");
             System.out.println("1. Deposit to My Account");
             System.out.println("2. Withdraw from My Account");
             System.out.println("3. Show All Balances");
@@ -33,7 +62,6 @@ public class Main {
             System.out.println("8. Show all transactions");
             System.out.println("9. Add new account");
 
-
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
             float amount;
@@ -42,22 +70,20 @@ public class Main {
                 case 1:
                     System.out.print("Amount to deposit into My Account: ");
                     amount = scanner.nextFloat();
-                    Transaction newDepositTransaction = accounts.get(chosenAccount).deposit(amount);
+                    Transaction newDepositTransaction = accounts.get(chosenAccountNumber).deposit(amount);
                     transactions.add(newDepositTransaction);
                     break;
                 case 2:
                     System.out.print("Amount to withdraw from My Account: ");
                     amount = scanner.nextFloat();
-                    Transaction newWithdrawTransaction = accounts.get(chosenAccount).withdraw(amount);
+                    Transaction newWithdrawTransaction = accounts.get(chosenAccountNumber).withdraw(amount);
                     transactions.add(newWithdrawTransaction);
                     break;
                 case 3: // Should be done with a cycle, this is temporary
-                    System.out.println("My initial Account:");
-                    accounts.get(1).printBalance();
-                    System.out.println("Friend's Account 1:");
-                    accounts.get(2).printBalance();
-                    System.out.println("Friend's Account 2:");
-                    accounts.get(3).printBalance();
+                    for(Map.Entry<Integer, BankAccount> entry : accounts.entrySet()) {
+                        System.out.print("Account nr." + entry.getValue().getAccountNumber() + " balance is: ");
+                        entry.getValue().printBalance();
+                    }
                     break;
                 case 4:
                     System.out.print("Enter the number of the account you want to transfer to: ");
@@ -65,7 +91,7 @@ public class Main {
                     System.out.print("Amount to transfer: ");
                     amount = scanner.nextFloat();
 
-                    Transaction newTransferTransaction = accounts.get(chosenAccount).transfer(accounts.get(accountTo), amount);
+                    Transaction newTransferTransaction = accounts.get(chosenAccountNumber).transfer(accounts.get(accountTo), amount);
                     transactions.add(newTransferTransaction);
                     System.out.println("Transferred to account: " + accountTo);
                     if(!accounts.containsKey(accountTo)){
@@ -93,6 +119,7 @@ public class Main {
                         String password = scanner.next();
                         if(accounts.get(switchToAccount).authenticate(password)){
                             System.out.print("Switched to account " + switchToAccount);
+                            chosenAccountNumber = switchToAccount;
                         }
                         else {
                             System.out.println("Invalid password. Returning to menu...");
@@ -115,7 +142,8 @@ public class Main {
                     BankAccount newAccount = new BankAccount(password, initialBalance);
                     accounts.put(newAccount.getAccountNumber(), newAccount);
                     System.out.print("New account created. Signing you in... ");
-                    chosenAccount = newAccount.getAccountNumber();
+                    chosenAccountNumber = newAccount.getAccountNumber();
+                    break;
                 default:
                     System.out.println("Invalid option. Please try again.");
             }

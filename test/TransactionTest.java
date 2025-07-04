@@ -1,9 +1,8 @@
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TransactionTest {
-    private BankAccount account = new BankAccount("secure123", 1000.0f);
+    private final BankAccount account = new BankAccount("secure123", 1000.0f);
 
     @Test
     public void testDepositTransactionFields() {

@@ -1,25 +1,37 @@
 import java.io.Serializable;
-import java.lang.reflect.Parameter;
+import java.util.Random;
 
 public class BankAccount implements Serializable {
-    private int accountNumber;
+    private final int accountNumber;
     private String password;
     float balance;
 
     // Default constructor
     public BankAccount() {
+        // We create a unique account number
+        long timestamp = System.currentTimeMillis() % 10000000; // 7-digit base
+        int random = new Random().nextInt(900) + 100; // 3-digit random
+        this.accountNumber = Math.abs((int) ((timestamp * 1000) + random)); // might cause integer overflow in the future (2038+)
+        balance = 0;
         System.out.println("Bank Account Constructor");
     }
 
     // Parameterized constructor
-    public BankAccount(int accountNumber, String password, float balance) {
-        this.accountNumber = accountNumber;
+    public BankAccount(String password, float balance) {
+        // Unique account number
+        long timestamp = System.currentTimeMillis() % 10000000;
+        int random = new Random().nextInt(900) + 100;
+        this.accountNumber = Math.abs((int) ((timestamp * 1000) + random));
         this.password = password;
         this.balance = balance;
     }
 
     public int getAccountNumber() {
         return accountNumber;
+    }
+
+    public float getBalance() {
+        return balance;
     }
 
     // Login validation

@@ -1,11 +1,10 @@
 import java.io.*;
-import java.util.*;
 
 public class Storage {
 
     public static <T> T load(String filename) {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))) {
-            return (T) in.readObject();
+            return (T) in.readObject(); // should be checked to avoid errors, but for now it only uses internal files
         } catch (FileNotFoundException e) {
             System.out.println("No file found: " + filename + "; Creating new one...");
             return null;

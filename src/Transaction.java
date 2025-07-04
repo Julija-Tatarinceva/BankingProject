@@ -2,15 +2,15 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Transaction implements Serializable {
-    String type;
-    float amount;
-    Integer fromAccount;
-    Integer toAccount;
-    LocalDateTime timestamp;
+    final String type;
+    final float amount;
+    final Integer fromAccount;
+    final Integer toAccount;
+    final LocalDateTime timestamp;
 
-    public Transaction() {
-        System.out.println("Transaction created.");
-    }
+//    public Transaction() {
+//        System.out.println("Transaction created.");
+//    }
 
     public Transaction(String type, float amount, Integer from, Integer to) {
         this.type = type;
@@ -20,10 +20,29 @@ public class Transaction implements Serializable {
         this.timestamp = LocalDateTime.now();
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public Integer getFromAccount() {
+        return fromAccount;
+    }
+
+    public float getAmount() {
+        return amount;
+    }
+
+    public Integer getToAccount() {
+        return toAccount;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
     @Override
     public String toString() {
         return timestamp + ", " + type + ", " + amount + ", from " +
-                (fromAccount != null ? fromAccount : "*ATM*") + ", to " +
-                (toAccount != null ? toAccount : "*ATM*");
+                (fromAccount != null ? fromAccount : "*ATM*") + ", to " + (toAccount != null ? toAccount : "*ATM*");
     }
 }
